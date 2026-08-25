@@ -148,101 +148,236 @@ def run_demo(
 
 
 TUTORIAL = r"""
-## How the attack code works
+<div class="tutorial-kicker">INTERACTIVE COMPANION</div>
 
-Keep this guide open while you experiment. These are the lines that do the
-important work, in the same order as the program.
+# From pixels to adversarial image
 
-### 1. Prepare the image
+Follow the four stages in the same order as the program. You can leave this
+guide open while adjusting the attack controls behind it.
 
-`pixels = image_to_tensor(image)`
+## 01 · Prepare the image
+
+```python
+pixels = image_to_tensor(image)
+```
 
 Resizes and center-crops the image to 224 × 224, converts it to RGB numbers in
 the range 0–1, and adds a one-image batch dimension.
 
-`model((pixels - MEAN) / STD)`
+```python
+clean_logits = model((pixels - MEAN) / STD)
+```
 
 Normalizes each color channel the way ResNet-18 expects, then asks the model for
 1,000 ImageNet class scores (logits).
 
-`clean_id, clean_confidence = prediction(clean_logits)`
+```python
+clean_id, clean_confidence = prediction(clean_logits)
+```
 
 Turns the scores into probabilities and records the model's original answer.
 That class becomes the label both attacks try to move away from.
 
-### 2. FGSM: one large step
+## 02 · FGSM — one large step
 
-`attacked.requires_grad_(True)`
+```python
+attacked.requires_grad_(True)
+```
 
 Tells PyTorch to track how the loss changes when each input pixel changes.
 
-`loss = cross_entropy(logits, target)`
+```python
+loss = cross_entropy(logits, target)
+```
 
 Measures how well the model still supports its original prediction.
 
-`loss.backward()`
+```python
+loss.backward()
+```
 
 Computes one gradient value for every input pixel and color channel.
 
-`gradient.sign()`
+```python
+direction = gradient.sign()
+```
 
 Keeps only whether each gradient points up or down. This spends the pixel budget
 in the most loss-increasing direction under an L∞ constraint.
 
-`attacked + epsilon * gradient.sign()`
+```python
+adversarial = attacked + epsilon * direction
+```
 
 Makes FGSM's single step. Epsilon is the maximum permitted change to any channel.
 
-`.clamp(0, 1)`
+```python
+adversarial = adversarial.clamp(0, 1)
+```
 
 Keeps the result inside the valid pixel range.
 
-### 3. PGD: several small steps
+## 03 · PGD — several small steps
 
-`for _ in range(steps):`
+```python
+for _ in range(steps):
+```
 
 Repeats the gradient calculation. Unlike FGSM, PGD can adjust its direction as
 the image moves through the model's decision landscape.
 
-`adversarial + step_size * gradient.sign()`
+```python
+adversarial += step_size * gradient.sign()
+```
 
 Takes one small loss-increasing step. A step size smaller than epsilon lets PGD
 search rather than jump straight to the edge.
 
-`lower = original - epsilon` / `upper = original + epsilon`
+```python
+lower = original - epsilon
+upper = original + epsilon
+```
 
 Defines the allowed L∞ box around the untouched image.
 
-`maximum(minimum(adversarial, upper), lower)`
+```python
+adversarial = maximum(minimum(adversarial, upper), lower)
+```
 
 Projects every PGD step back into that box. This is the “projected” part of
 Projected Gradient Descent and makes FGSM and PGD use the same total budget.
 
-### 4. Read the comparison
+## 04 · Read the comparison
 
 Both attacks begin from the clean image and attack its original predicted class.
 FGSM uses one step; PGD uses repeated smaller steps. The amplified panel shows
 PGD's pixel changes around neutral gray—those colors are deliberately magnified,
 not what the model actually receives.
 
-This is an untargeted, white-box classroom attack: it needs model gradients and
-tries to leave the original class, rather than choose a particular wrong answer.
+> **Threat model** · This is an untargeted, white-box classroom attack. It needs
+> model gradients and tries to leave the original class—not choose a particular
+> wrong answer.
 """
 
 
 APP_CSS = """
+#app-version {
+  opacity: .62;
+  font-size: .78rem;
+  margin-top: -.65rem;
+}
+#tutorial-open {
+  max-width: 13rem;
+  border-radius: 999px !important;
+}
 #tutorial-modal {
-  position: fixed; inset: 4vh 8vw; z-index: 1000; overflow-y: auto;
-  max-width: 920px; margin: auto; padding: 1.5rem 2rem;
-  border: 1px solid var(--border-color-primary); border-radius: 18px;
+  position: fixed !important;
+  z-index: 1000;
+  top: 1.25rem;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  width: min(680px, calc(100vw - 2.5rem));
+  padding: 0 !important;
+  overflow-y: auto;
+  border: 1px solid color-mix(in srgb, var(--border-color-primary) 75%, transparent);
+  border-radius: 24px;
   background: var(--background-fill-primary);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, .35);
+  box-shadow:
+    0 0 0 100vmax rgba(8, 12, 20, .46),
+    0 28px 80px rgba(8, 12, 20, .32),
+    0 4px 16px rgba(8, 12, 20, .12);
+  scrollbar-width: thin;
+  isolation: isolate;
 }
-#tutorial-modal::before {
-  content: ""; position: fixed; inset: 0; z-index: -1;
-  background: rgba(8, 12, 20, .58); backdrop-filter: blur(3px);
+#tutorial-modal > .form {
+  gap: 0 !important;
 }
-#tutorial-close { max-width: 8rem; margin-left: auto; }
+#tutorial-close {
+  position: sticky;
+  z-index: 4;
+  top: 1rem;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: max-content;
+  margin: 1rem 1rem -3.75rem auto;
+  padding: .48rem .9rem !important;
+  border: 1px solid var(--border-color-primary) !important;
+  border-radius: 999px !important;
+  background: var(--background-fill-primary) !important;
+  box-shadow: 0 4px 18px rgba(8, 12, 20, .12);
+}
+#tutorial-content {
+  padding: 3.25rem clamp(1.4rem, 4vw, 3.5rem) 3rem;
+}
+#tutorial-content .prose {
+  max-width: 58ch;
+  margin: 0 auto;
+  color: var(--body-text-color);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+#tutorial-content .tutorial-kicker {
+  display: inline-flex;
+  margin-bottom: .7rem;
+  color: #7c3aed;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .15em;
+}
+#tutorial-content h1 {
+  margin: 0 0 .75rem;
+  max-width: 15ch;
+  font-size: clamp(2rem, 5vw, 3.15rem);
+  line-height: 1.03;
+  letter-spacing: -.045em;
+}
+#tutorial-content h1 + p {
+  margin: 0 0 2.5rem;
+  max-width: 49ch;
+  color: var(--body-text-color-subdued);
+  font-size: 1.08rem;
+}
+#tutorial-content h2 {
+  margin: 2.7rem 0 1.1rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--border-color-primary);
+  font-size: 1.25rem;
+  letter-spacing: -.02em;
+}
+#tutorial-content pre {
+  margin: 1rem 0 .6rem;
+  padding: .9rem 1.05rem;
+  overflow-x: auto;
+  border: 1px solid color-mix(in srgb, #8b5cf6 25%, var(--border-color-primary));
+  border-radius: 12px;
+  background: color-mix(in srgb, #8b5cf6 7%, var(--background-fill-secondary));
+  box-shadow: inset 3px 0 0 #8b5cf6;
+}
+#tutorial-content pre code {
+  color: var(--body-text-color);
+  font-size: .88rem;
+  line-height: 1.55;
+}
+#tutorial-content pre + p {
+  margin: 0 0 1.45rem;
+  color: var(--body-text-color-subdued);
+}
+#tutorial-content blockquote {
+  margin: 2.6rem 0 0;
+  padding: 1.1rem 1.25rem;
+  border: 0;
+  border-radius: 14px;
+  background: color-mix(in srgb, #8b5cf6 10%, var(--background-fill-secondary));
+}
+@media (max-width: 640px) {
+  #tutorial-modal {
+    inset: 0;
+    width: 100vw;
+    border: 0;
+    border-radius: 0;
+  }
+  #tutorial-content { padding: 3.4rem 1.25rem 2rem; }
+}
 """
 
 
@@ -254,7 +389,9 @@ def build_app() -> gr.Blocks:
             "against pretrained ResNet-18. Use only images you are permitted to upload."
         )
         gr.Markdown("`PGD tutorial edition`", elem_id="app-version")
-        tutorial_open = gr.Button("Open code tutorial", variant="secondary")
+        tutorial_open = gr.Button(
+            "Read the code tutorial  →", variant="secondary", elem_id="tutorial-open"
+        )
         with gr.Row():
             input_image = gr.Image(type="pil", label="Input image")
             with gr.Column():
@@ -288,8 +425,8 @@ def build_app() -> gr.Blocks:
         )
 
         with gr.Column(visible=False, elem_id="tutorial-modal") as tutorial_modal:
-            tutorial_close = gr.Button("Close tutorial", elem_id="tutorial-close")
-            gr.Markdown(TUTORIAL)
+            tutorial_close = gr.Button("Close  ×", elem_id="tutorial-close")
+            gr.Markdown(TUTORIAL, elem_id="tutorial-content")
 
         tutorial_open.click(
             lambda: gr.update(visible=True), outputs=tutorial_modal, queue=False
