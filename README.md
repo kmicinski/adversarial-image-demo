@@ -1,11 +1,11 @@
 # Adversarial Image Classifier Demo
 
 A small teaching demo for a cybersecurity + AI course. It uses a pretrained
-ImageNet ResNet-18, classifies an uploaded image, and applies the Fast Gradient
-Sign Method (FGSM) to produce an adversarial version.
+ImageNet ResNet-18, classifies an uploaded image, and compares the Fast Gradient
+Sign Method (FGSM) with iterative Projected Gradient Descent (PGD).
 
-The interface shows the before/after predictions, the perturbed image, and an
-amplified visualization of the otherwise subtle pixel changes.
+The interface shows both attacked predictions and images, an amplified PGD
+perturbation, and an in-app code tutorial that opens as a modal alongside the demo.
 
 ## Run in Google Colab
 
@@ -28,6 +28,8 @@ Then open the local URL printed by Gradio.
 
 - FGSM uses the sign of the gradient of classification loss with respect to the
   input pixels: `x_adv = clip(x + epsilon * sign(gradient), 0, 1)`.
+- PGD repeats smaller signed-gradient steps and projects after every step so the
+  result remains within the same epsilon budget around the original image.
 - `epsilon` bounds the maximum per-channel pixel change. `0.02` is roughly
   `5/255`; the attack becomes more visible as epsilon increases.
 - This is a white-box, untargeted attack: it has gradient access and tries to
