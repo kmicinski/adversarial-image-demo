@@ -228,56 +228,68 @@ not what the model actually receives.
 
 APP_CSS = """
 .gradio-container {
+  --solar-base3: #fdf6e3;
+  --solar-base2: #eee8d5;
+  --solar-base1: #93a1a1;
+  --solar-base00: #657b83;
+  --solar-base01: #586e75;
+  --solar-blue: #268bd2;
+  --solar-cyan: #2aa198;
+  --background-fill-primary: #fdf6e3;
+  --background-fill-secondary: #eee8d5;
+  --block-background-fill: #fffaf0;
+  --block-border-color: #ddd6c4;
+  --border-color-primary: #ddd6c4;
+  --body-text-color: #586e75;
+  --body-text-color-subdued: #657b83;
   max-width: 1180px !important;
   padding: clamp(1rem, 3vw, 2.5rem) !important;
-  background:
-    radial-gradient(circle at 8% 0%, rgba(124, 58, 237, .09), transparent 28rem),
-    radial-gradient(circle at 100% 18%, rgba(14, 165, 233, .07), transparent 25rem);
+  background: var(--solar-base3);
+  color: var(--solar-base01);
 }
 #hero {
-  padding: clamp(1.1rem, 2.5vw, 2rem) 0 1.25rem;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3.25rem) 1rem 1.5rem;
+  text-align: center;
 }
 #hero .hero-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: .45rem;
-  margin-bottom: .8rem;
-  color: #7c3aed;
-  font-size: .75rem;
-  font-weight: 800;
-  letter-spacing: .14em;
+  margin-bottom: .9rem;
+  color: var(--solar-base00);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .11em;
   text-transform: uppercase;
-}
-#hero .hero-kicker::before {
-  content: "";
-  width: .5rem;
-  height: .5rem;
-  border-radius: 50%;
-  background: #8b5cf6;
-  box-shadow: 0 0 0 5px rgba(139, 92, 246, .12);
 }
 #hero h1 {
   margin: 0;
-  max-width: 820px;
-  font-size: clamp(2.35rem, 6vw, 4.75rem);
-  line-height: .98;
-  letter-spacing: -.055em;
+  color: #073642;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 5vw, 3.15rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -.025em;
 }
 #hero p {
-  max-width: 670px;
-  margin: 1.15rem 0 0;
-  color: var(--body-text-color-subdued);
-  font-size: clamp(1rem, 2vw, 1.16rem);
-  line-height: 1.65;
+  max-width: 620px;
+  margin: 1rem auto 0;
+  color: var(--solar-base00);
+  font-size: 1rem;
+  line-height: 1.6;
 }
 #hero-actions {
+  justify-content: center;
   align-items: center;
-  margin-bottom: 1.4rem;
+  max-width: 760px;
+  margin: 0 auto 2rem;
 }
 #tutorial-open {
   min-width: 13.5rem;
   max-width: 13.5rem;
-  border-radius: 999px !important;
+  border-color: #b9b29f !important;
+  border-radius: 7px !important;
+  background: #fffaf0 !important;
+  color: #075985 !important;
 }
 #source-links {
   margin: 0 !important;
@@ -285,7 +297,7 @@ APP_CSS = """
   font-size: .86rem;
 }
 #source-links a, #tutorial-content a {
-  color: #7c3aed;
+  color: var(--solar-blue);
   font-weight: 650;
   text-decoration: none;
 }
@@ -294,9 +306,9 @@ APP_CSS = """
 #input-image, #control-panel, #results-panel, .output-card {
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--border-color-primary) 82%, transparent) !important;
-  border-radius: 20px !important;
-  background: color-mix(in srgb, var(--background-fill-primary) 94%, transparent) !important;
-  box-shadow: 0 10px 35px rgba(15, 23, 42, .06);
+  border-radius: 9px !important;
+  background: #fffaf0 !important;
+  box-shadow: none;
 }
 #input-image { min-height: 390px; }
 #control-panel { padding: clamp(1rem, 2vw, 1.4rem); }
@@ -310,9 +322,11 @@ APP_CSS = """
   min-height: 3.1rem;
   margin-top: .35rem;
   border: 0 !important;
-  border-radius: 13px !important;
+  border-radius: 7px !important;
+  background: var(--solar-blue) !important;
+  color: #fdf6e3 !important;
   font-weight: 750;
-  box-shadow: 0 8px 20px rgba(124, 58, 237, .2);
+  box-shadow: none;
 }
 #results-panel {
   margin-top: 1.15rem;
@@ -327,8 +341,8 @@ APP_CSS = """
   margin: .15rem .35rem .1rem 0;
   padding: .32rem .65rem;
   border: 1px solid var(--border-color-primary);
-  border-radius: 999px;
-  background: var(--background-fill-secondary);
+  border-radius: 5px;
+  background: var(--solar-base2);
   color: var(--body-text-color-subdued);
   font-size: .76rem;
   font-weight: 650;
@@ -354,13 +368,12 @@ APP_CSS = """
   width: min(680px, calc(100vw - 2.5rem));
   padding: 0 !important;
   overflow-y: auto;
-  border: 1px solid color-mix(in srgb, var(--border-color-primary) 75%, transparent);
-  border-radius: 24px;
-  background: var(--background-fill-primary);
+  border: 1px solid #d4cdbb;
+  border-radius: 10px;
+  background: var(--solar-base3);
   box-shadow:
-    0 0 0 100vmax rgba(8, 12, 20, .46),
-    0 28px 80px rgba(8, 12, 20, .32),
-    0 4px 16px rgba(8, 12, 20, .12);
+    0 0 0 100vmax rgba(0, 43, 54, .28),
+    0 18px 48px rgba(0, 43, 54, .18);
   scrollbar-width: thin;
   isolation: isolate;
 }
@@ -377,9 +390,10 @@ APP_CSS = """
   margin: 1rem 1rem -3.75rem auto;
   padding: .48rem .9rem !important;
   border: 1px solid var(--border-color-primary) !important;
-  border-radius: 999px !important;
-  background: var(--background-fill-primary) !important;
-  box-shadow: 0 4px 18px rgba(8, 12, 20, .12);
+  border-radius: 6px !important;
+  background: #fffaf0 !important;
+  color: var(--solar-base01) !important;
+  box-shadow: none;
 }
 #tutorial-content {
   padding: 3.25rem clamp(1.4rem, 4vw, 3.5rem) 3rem;
@@ -394,7 +408,7 @@ APP_CSS = """
 #tutorial-content .tutorial-kicker {
   display: inline-flex;
   margin-bottom: .7rem;
-  color: #7c3aed;
+  color: var(--solar-cyan);
   font-size: .72rem;
   font-weight: 800;
   letter-spacing: .15em;
@@ -402,9 +416,11 @@ APP_CSS = """
 #tutorial-content h1 {
   margin: 0 0 .75rem;
   max-width: 15ch;
-  font-size: clamp(2rem, 5vw, 3.15rem);
-  line-height: 1.03;
-  letter-spacing: -.045em;
+  color: #073642;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  line-height: 1.08;
+  letter-spacing: -.025em;
 }
 #tutorial-content h1 + p {
   margin: 0 0 2.5rem;
@@ -423,10 +439,10 @@ APP_CSS = """
   margin: 1rem 0 .6rem;
   padding: .9rem 1.05rem;
   overflow-x: auto;
-  border: 1px solid color-mix(in srgb, #8b5cf6 25%, var(--border-color-primary));
-  border-radius: 12px;
-  background: color-mix(in srgb, #8b5cf6 7%, var(--background-fill-secondary));
-  box-shadow: inset 3px 0 0 #8b5cf6;
+  border: 1px solid #d4cdbb;
+  border-radius: 6px;
+  background: var(--solar-base2);
+  box-shadow: inset 3px 0 0 var(--solar-cyan);
 }
 #tutorial-content pre code {
   color: var(--body-text-color);
@@ -441,12 +457,12 @@ APP_CSS = """
   margin: 2.6rem 0 0;
   padding: 1.1rem 1.25rem;
   border: 0;
-  border-radius: 14px;
-  background: color-mix(in srgb, #8b5cf6 10%, var(--background-fill-secondary));
+  border-radius: 6px;
+  background: var(--solar-base2);
 }
 @media (max-width: 640px) {
   .gradio-container { padding: .85rem !important; }
-  #hero h1 { font-size: 2.55rem; }
+  #hero h1 { font-size: 2.15rem; }
   #hero-actions { align-items: flex-start; }
   #tutorial-open { max-width: none; width: 100%; }
   #input-image { min-height: 310px; }
@@ -462,17 +478,17 @@ APP_CSS = """
 
 
 def build_app() -> gr.Blocks:
-    theme = gr.themes.Soft(
-        primary_hue="violet", neutral_hue="slate", radius_size="lg"
+    theme = gr.themes.Base(
+        primary_hue="blue", neutral_hue="slate", radius_size="sm"
     )
     with gr.Blocks(title="Adversarial Image Lab", theme=theme, css=APP_CSS) as demo:
         gr.HTML(
             """
             <section id="hero">
-              <div class="hero-kicker">Adversarial Image Lab</div>
-              <h1>One image. Two ways to fool a model.</h1>
-              <p>Compare a single-step FGSM attack with iterative PGD against a
-              pretrained ResNet-18—then inspect exactly what changed.</p>
+              <div class="hero-kicker">Cybersecurity + AI · Classroom Lab</div>
+              <h1>Adversarial Examples: FGSM and PGD</h1>
+              <p>Compare two white-box attacks on a pretrained ResNet-18 and
+              examine how bounded pixel changes affect its predictions.</p>
             </section>
             """
         )
