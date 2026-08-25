@@ -7,6 +7,11 @@ Sign Method (FGSM) with iterative Projected Gradient Descent (PGD).
 The interface shows both attacked predictions and images, an amplified PGD
 perturbation, and an in-app code tutorial that opens as a modal alongside the demo.
 
+## Algorithm source
+
+- [Complete FGSM implementation](attacks/fgsm.py)
+- [Complete PGD implementation](attacks/pgd.py)
+
 ## Run in Google Colab
 
 Open `adversarial_image_demo.ipynb` in Colab and run its cells from top to
