@@ -243,9 +243,21 @@ APP_CSS = """
   --body-text-color: #586e75;
   --body-text-color-subdued: #657b83;
   max-width: 1180px !important;
+  width: 100% !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
   padding: clamp(1rem, 3vw, 2.5rem) !important;
   background: var(--solar-base3);
   color: var(--solar-base01);
+}
+body {
+  margin: 0;
+  background: #fdf6e3;
+}
+#workspace-row, #results-panel, #outputs-heading, #output-row, #footer-note {
+  width: 100%;
+  margin-right: auto !important;
+  margin-left: auto !important;
 }
 #hero {
   max-width: 760px;
